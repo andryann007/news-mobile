@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.DetailActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/detailToolbar"
+        android:layout_height="?actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:background="@color/black"
+        android:elevation="5dp"
+        app:logo="@drawable/ic_back"
+        app:title="News Detail"
+        app:titleMarginStart="32dp"
+        app:titleTextColor="@color/white"/>
+
+    <ProgressBar
+        android:id="@+id/loadingDetail"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
+
+    <TextView
+        android:id="@+id/textNoResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/text_no_result"
+        android:fontFamily="sans-serif"
+        android:textAlignment="textStart"
+        android:textColor="@android:color/background_light"
+        android:textSize="20sp"
+        android:visibility="gone"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/detailToolbar">
+
+        <LinearLayout
+            android:id="@+id/verticalLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/textTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/news_title"
+                android:fontFamily="sans-serif"
+                android:textAlignment="textStart"
+                android:textColor="@android:color/background_light"
+                android:textSize="20sp"/>
+
+            <ImageView
+                android:id="@+id/imageNews"
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/news_image"/>
+
+            <LinearLayout
+                android:id="@+id/horizontalLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textAuthor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/news_author"
+                    android:fontFamily="sans-serif"
+                    android:textAlignment="textStart"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="14sp"
+                    android:maxLines="1"/>
+
+                <TextView
+                    android:id="@+id/textDatePublished"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="5dp"
+                    android:text="@string/date_published"
+                    android:fontFamily="sans-serif"
+                    android:textAlignment="textEnd"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="14sp"
+                    android:maxLines="1"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2.5dp"
+                android:text="@string/news_content"
+                android:fontFamily="sans-serif"
+                android:textAlignment="textStart"
+                android:textColor="@android:color/background_light"
+                android:textSize="14sp"
+                android:maxLength="20000"/>
+
+            <TextView
+                android:id="@+id/textSource"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/news_source"
+                android:fontFamily="sans-serif"
+                android:textAlignment="textStart"
+                android:textColor="@android:color/background_light"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
