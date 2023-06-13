@@ -7,7 +7,7 @@ the UI in my news app that included some features such as : search features, fil
 
 
 
-2. Home Activity -> This is Home UI, Where there are 2 bottom navigation menu (home & trending) and 3 features (search, filter, sort)
+2. Home Activity -> This is Home UI, Where there are 2 bottom navigation menu (home & trending) and 3 features
 ![Screenshot_2023-06-13-08-49-21-956_com example news](https://github.com/andryann007/news-mobile/assets/103846142/000de704-b0a7-4f81-bc8d-d098492f1129)
 
 
@@ -22,7 +22,7 @@ the UI in my news app that included some features such as : search features, fil
 
 
 
-5. Filter Features -> This is Filter Features, you can filter the news by category, country, or both by using this features
+5. Filter Features -> This is Filter Features, you can filter the news by category or country by using this features
 ![Screenshot_2023-06-13-08-56-44-577_com example news](https://github.com/andryann007/news-mobile/assets/103846142/8e1787fa-11e6-4899-b0da-bee0ef292936)
 
 
