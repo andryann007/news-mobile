@@ -12,3 +12,7 @@ the UI in my news app that included some features such as : search features, fil
 ![Screenshot_2023-06-13-08-49-36-638_com example news](https://github.com/andryann007/news-mobile/assets/103846142/bf7ed1ab-029e-4e5c-8c7b-771ec51af3c6)
 
 4. Search Results
+![Screenshot_2023-06-13-08-49-51-559_com example news](https://github.com/andryann007/news-mobile/assets/103846142/e700fa66-27f3-41bc-a693-e84557756d06)
+
+
+5. Filter Features
