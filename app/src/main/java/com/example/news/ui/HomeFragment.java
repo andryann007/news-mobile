@@ -32,6 +32,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private NewsEverythingAdapter newsEverythingAdapter;
     private final List<NewsResult> newsResultList = new ArrayList<>();
+    private int page = 1;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -57,15 +58,28 @@ public class HomeFragment extends Fragment {
         newsEverythingAdapter = new NewsEverythingAdapter(newsResultList, getContext());
 
         rvAllNews.setAdapter(newsEverythingAdapter);
-        getNewsData();
+        getNewsData(page);
+
+        rvAllNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if(!rvAllNews.canScrollVertically(1)){
+                    page++;
+                    getNewsData(page);
+                }
+            }
+        });
     }
 
-    private void getNewsData() {
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String q = "trending";
-        String language = "en";
+    private void getNewsData(int page) {
+        final String apiKey = "71593d94a9394f10a6810987d49396ff";
+        final String q = "trending";
+        final String language = "en";
+        final int pageSize = 20;
 
-        Call<NewsResponse> call = apiService.getEverything(apiKey, q, language);
+        Call<NewsResponse> call = apiService.getEverything(apiKey, q, language, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
@@ -75,7 +89,7 @@ public class HomeFragment extends Fragment {
                     binding.rvAllNews.setVisibility(View.VISIBLE);
 
                     newsResultList.addAll(response.body().getResults());
-                    newsEverythingAdapter.notifyItemChanged(pageCount, newsResultList.size());
+                    newsEverythingAdapter.notifyItemRangeInserted(pageCount, newsResultList.size());
                 } else {
                     binding.loadingAll.setVisibility(View.GONE);
                     binding.textNoResult.setVisibility(View.VISIBLE);

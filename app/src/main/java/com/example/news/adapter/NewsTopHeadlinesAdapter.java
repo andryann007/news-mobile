@@ -101,12 +101,7 @@ public class NewsTopHeadlinesAdapter extends RecyclerView.Adapter<NewsTopHeadlin
 
             itemView.setOnClickListener(v -> {
                 Intent i = new Intent(context, DetailActivity.class);
-                i.putExtra("title", newsResult.getTitle());
-                i.putExtra("urlToImage", newsResult.getUrlToImage());
-                i.putExtra("author", newsResult.getAuthor());
-                i.putExtra("publishedAt", newsResult.getPublishedAt().substring(0, 10));
-                i.putExtra("content", newsResult.getContent());
-                i.putExtra("source", newsResult.getUrl());
+                i.putExtra("url", newsResult.getUrl());
                 context.startActivity(i);
             });
         }

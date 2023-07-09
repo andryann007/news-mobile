@@ -9,10 +9,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,12 +30,12 @@ import com.example.news.R;
 import com.example.news.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     private String searchType = null;
     private String sortType = null;
-    private String filterCategory = null;
-    private String filterCountry = null;
+    private String category = null;
+    private String country = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +84,8 @@ public class MainActivity extends AppCompatActivity{
             });
             btnSearch.setOnClickListener(view-> doSearch(searchQuery.getText().toString(), searchType));
 
-            searchQuery.setOnEditorActionListener((v1, actionid, event) -> {
-                if(actionid == EditorInfo.IME_ACTION_GO){
+            searchQuery.setOnEditorActionListener((v1, actionId, event) -> {
+                if(actionId == EditorInfo.IME_ACTION_GO){
                     doSearch(searchQuery.getText().toString(), searchType);
                 }
                 return false;
@@ -162,544 +165,44 @@ public class MainActivity extends AppCompatActivity{
         LayoutInflater inflater = getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_filter, null);
 
-        Button btnFilter = v.findViewById(R.id.btnFilter);
-        RadioGroup radioFilterCategory = v.findViewById(R.id.radioFilter);
-        RadioGroup radioFilterCountry = v.findViewById(R.id.radioFilter2);
-
         builder.setView(v);
-
         AlertDialog dialogFilter = builder.create();
+
         if(dialogFilter.getWindow() != null){
             dialogFilter.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-            radioFilterCountry.setOnCheckedChangeListener((group, checkedId) -> {
-                if(checkedId == R.id.radioFilterAmerica){
-                    filterCountry = "us";
-                } else if (checkedId == R.id.radioFilterChinese) {
-                    filterCountry = "cn";
-                } else if (checkedId == R.id.radioFilterJapan) {
-                    filterCountry = "jp";
-                } else if (checkedId == R.id.radioFilterIndonesian) {
-                    filterCountry = "id";
-                } else if (checkedId == R.id.radioFilterKorean) {
-                    filterCountry = "kr";
-                } else if (checkedId == R.id.radioFilterRusian) {
-                    filterCountry = "ru";
-                } else if (checkedId == R.id.radioFilterThailand) {
-                    filterCountry = "th";
-                } else {
-                    filterCountry = null;
-                }
-            });
 
-            radioFilterCategory.setOnCheckedChangeListener((group, checkedId) -> {
-                if(checkedId == R.id.radioFilterBusiness){
-                    filterCategory = "business";
-                } else if (checkedId == R.id.radioFilterEntertainment){
-                    filterCategory = "entertainment";
-                } else if (checkedId == R.id.radioFilterGeneral){
-                    filterCategory = "general";
-                } else if (checkedId == R.id.radioFilterHealth){
-                    filterCategory = "health";
-                } else if (checkedId == R.id.radioFilterScience){
-                    filterCategory = "science";
-                } else if (checkedId == R.id.radioFilterSports){
-                    filterCategory = "sports";
-                } else if (checkedId == R.id.radioFilterTechnology){
-                    filterCategory = "technology";
-                } else {
-                    filterCategory = null;
-                }
-            });
-            btnFilter.setOnClickListener(view-> doFilter(filterCategory, filterCountry));
+            Spinner spinnerFilterCategory = v.findViewById(R.id.spinnerFilterCategory);
+            Spinner spinnerFilterCountry = v.findViewById(R.id.spinnerFilterCountry);
+            Button btnFilter = v.findViewById(R.id.btnFilter);
+
+            ArrayAdapter<String> filterNewsCategory = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    getResources().getStringArray(R.array.newsCategoryList));
+
+            ArrayAdapter<String> filterNewsCountry = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    getResources().getStringArray(R.array.newsCountryList));
+
+            filterNewsCategory.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            filterNewsCountry.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            spinnerFilterCategory.setAdapter(filterNewsCategory);
+            spinnerFilterCountry.setAdapter(filterNewsCountry);
+
+            spinnerFilterCategory.setOnItemSelectedListener(this);
+            spinnerFilterCountry.setOnItemSelectedListener(this);
+
+            btnFilter.setOnClickListener(view -> doFilter(category, country));
             dialogFilter.show();
         }
     }
 
     private void doFilter(String category, String country){
-        if(category == null && country == null){
-            Toast.makeText(getApplicationContext(), "No Filter Type !!!", Toast.LENGTH_SHORT).show();
-        } else if (category == null) {
-            switch (country) {
-                case "us": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "us");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-                case "cn": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "cn");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-                case "jp": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "jp");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-                case "id": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "id");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-                case "kr": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "kr");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-                case "ru": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "ru");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-                case "th": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "th");
-                    i.putExtra("category", "");
-                    startActivity(i);
-                    break;
-                }
-            }
-        } else if (country == null) {
-            switch (category) {
-                case "business": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "business");
-                    startActivity(i);
-                    break;
-                }
-                case "entertainment": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "entertainment");
-                    startActivity(i);
-                    break;
-                }
-                case "general": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "general");
-                    startActivity(i);
-                    break;
-                }
-                case "health": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "health");
-                    startActivity(i);
-                    break;
-                }
-                case "science": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "science");
-                    startActivity(i);
-                    break;
-                }
-                case "sports": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "sports");
-                    startActivity(i);
-                    break;
-                }
-                case "technology": {
-                    Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                    i.putExtra("country", "");
-                    i.putExtra("category", "technology");
-                    startActivity(i);
-                    break;
-                }
-            }
-        } else {
-            switch (category) {
-                case "business":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "business");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                case "entertainment":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "entertainment");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                case "general":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "general");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                case "health":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "health");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                case "science":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "science");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                case "sports":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "sports");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                case "technology":
-                    switch (country) {
-                        case "us": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "us");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                        case "cn": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "cn");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                        case "jp": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "jp");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                        case "id": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "id");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                        case "kr": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "kr");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                        case "ru": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "ru");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                        case "th": {
-                            Intent i = new Intent(MainActivity.this, FilterActivity.class);
-                            i.putExtra("country", "th");
-                            i.putExtra("category", "technology");
-                            startActivity(i);
-                            break;
-                        }
-                    }
-                    break;
-                default:
-                    Toast.makeText(getApplicationContext(), "Invalid Filter Type !!!", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
+        Intent i = new Intent(MainActivity.this, FilterActivity.class);
+
+        i.putExtra("category", category);
+        i.putExtra("country", country);
+        startActivity(i);
     }
 
     @Override
@@ -719,5 +222,96 @@ public class MainActivity extends AppCompatActivity{
             dialogFilter();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String categorySelected = parent.getItemAtPosition(position).toString().toLowerCase();
+        String countrySelected = parent.getItemAtPosition(position).toString().toLowerCase();
+
+        switch(categorySelected){
+            case "business" :
+                category = "business";
+                break;
+
+            case "entertainment" :
+                category = "entertainment";
+                break;
+
+            case "general" :
+                category = "general";
+                break;
+
+            case "health" :
+                category = "health";
+                break;
+
+            case "science" :
+                category = "science";
+                break;
+
+            case "sports" :
+                category = "sports";
+                break;
+
+            case "technology" :
+                category = "technology";
+                break;
+
+            case "choose category" :
+                category = null;
+                break;
+        }
+
+        switch(countrySelected){
+            case "australia" :
+                country = "au";
+                break;
+
+            case "chinese" :
+                country = "cn";
+                break;
+
+            case "france" :
+                country = "fr";
+                break;
+
+            case "indonesia" :
+                country = "id";
+                break;
+
+            case "japan" :
+                country = "jp";
+                break;
+
+            case "south korea" :
+                country = "kr";
+                break;
+
+            case "russia" :
+                country = "ru";
+                break;
+
+            case "thailand" :
+                country = "th";
+                break;
+
+            case "united kingdom" :
+                country = "uk";
+                break;
+
+            case "united states" :
+                country = "us";
+                break;
+
+            case "choose country" :
+                country = null;
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

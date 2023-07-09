@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.text.HtmlCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.news.R;
 import com.example.news.adapter.NewsTopHeadlinesAdapter;
@@ -30,6 +31,10 @@ public class FilterActivity extends AppCompatActivity {
     private ApiService apiService;
     private ActivityFilterBinding binding;
     private final List<NewsResult> filterResultList = new ArrayList<>();
+    private int page = 1;
+    private final int pageSize = 20;
+    private final String apiKey = "71593d94a9394f10a6810987d49396ff";
+    private final String language = "en";
     private String filterCategory;
     private String filterCountry;
 
@@ -49,24 +54,57 @@ public class FilterActivity extends AppCompatActivity {
 
         filterAdapter = new NewsTopHeadlinesAdapter(filterResultList, this);
 
-        if(filterCountry.isEmpty()){
+        if(filterCountry == null){
             setCategoryTitle(binding.filterToolbar, filterCategory);
-            filterCategory();
-        } else if (filterCategory.isEmpty()){
+            filterCategory(page);
+
+            binding.rvFilterNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvFilterNews.canScrollVertically(1)){
+                        page++;
+                        filterCategory(page);
+                    }
+                }
+            });
+        } else if (filterCategory == null){
             setCountryTitle(binding.filterToolbar, filterCountry);
-            filterCountry();
+            filterCountry(page);
+
+            binding.rvFilterNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvFilterNews.canScrollVertically(1)){
+                        page++;
+                        filterCategory(page);
+                    }
+                }
+            });
         } else {
             setCategoryCountryTitle(binding.filterToolbar, filterCategory, filterCountry);
-            filterCategoryAndCountry();
+            filterCategoryAndCountry(page);
+
+            binding.rvFilterNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvFilterNews.canScrollVertically(1)){
+                        page++;
+                        filterCategoryAndCountry(page);
+                    }
+                }
+            });
         }
 
         binding.filterToolbar.setOnClickListener(v -> onBackPressed());
     }
-    private void filterCategory() {
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String language = "en";
-
-        Call<NewsResponse> call = apiService.filterCategory(apiKey, filterCategory, language);
+    private void filterCategory(int page) {
+        Call<NewsResponse> call = apiService.filterCategory(apiKey, filterCategory, language, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
@@ -93,11 +131,8 @@ public class FilterActivity extends AppCompatActivity {
         });
     }
 
-    private void filterCountry() {
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String language = "en";
-
-        Call<NewsResponse> call = apiService.filterCountry(apiKey, filterCountry, language);
+    private void filterCountry(int page) {
+        Call<NewsResponse> call = apiService.filterCountry(apiKey, filterCountry, language, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
@@ -109,7 +144,7 @@ public class FilterActivity extends AppCompatActivity {
                     binding.rvFilterNews.setVisibility(View.VISIBLE);
 
                     filterResultList.addAll(response.body().getResults());
-                    filterAdapter.notifyItemChanged(pageCount, filterResultList.size());
+                    filterAdapter.notifyItemRangeInserted(pageCount, filterResultList.size());
                 } else {
                     binding.loadingFIlter.setVisibility(View.GONE);
                     binding.textNoResult.setVisibility(View.VISIBLE);
@@ -124,11 +159,8 @@ public class FilterActivity extends AppCompatActivity {
         });
     }
 
-    private void filterCategoryAndCountry() {
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String language = "en";
-
-        Call<NewsResponse> call = apiService.filterCategoryAndCountry(apiKey, filterCategory, filterCountry, language);
+    private void filterCategoryAndCountry(int page) {
+        Call<NewsResponse> call = apiService.filterCategoryAndCountry(apiKey, filterCategory, filterCountry, language, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
@@ -140,7 +172,7 @@ public class FilterActivity extends AppCompatActivity {
                     binding.rvFilterNews.setVisibility(View.VISIBLE);
 
                     filterResultList.addAll(response.body().getResults());
-                    filterAdapter.notifyItemChanged(pageCount, filterResultList.size());
+                    filterAdapter.notifyItemRangeInserted(pageCount, filterResultList.size());
                 } else {
                     binding.loadingFIlter.setVisibility(View.GONE);
                     binding.textNoResult.setVisibility(View.VISIBLE);
@@ -155,15 +187,15 @@ public class FilterActivity extends AppCompatActivity {
         });
     }
 
-    private void setCategoryTitle(Toolbar toolbar, String textValue){
-        toolbar.setTitle(HtmlCompat.fromHtml("Filter News By : <b>" + textValue + "</b> Category", HtmlCompat.FROM_HTML_MODE_LEGACY));
+    private void setCategoryTitle(Toolbar toolbar, String category){
+        toolbar.setTitle(HtmlCompat.fromHtml("Filter : <b>" + category + "</b> category", HtmlCompat.FROM_HTML_MODE_LEGACY));
     }
 
-    private void setCountryTitle(Toolbar toolbar, String textValue){
-        toolbar.setTitle(HtmlCompat.fromHtml("Filter News By : <b>" + textValue + "</b> Country", HtmlCompat.FROM_HTML_MODE_LEGACY));
+    private void setCountryTitle(Toolbar toolbar, String country){
+        toolbar.setTitle(HtmlCompat.fromHtml("Filter : <b>" + country + "</b> country", HtmlCompat.FROM_HTML_MODE_LEGACY));
     }
 
-    private void setCategoryCountryTitle(Toolbar toolbar, String textValue, String textValue2){
-        toolbar.setTitle(HtmlCompat.fromHtml("Filter News By : <b>" + textValue + "</b> Category and <b>" + textValue2 + "</b> Country", HtmlCompat.FROM_HTML_MODE_LEGACY));
+    private void setCategoryCountryTitle(Toolbar toolbar, String category, String country){
+        toolbar.setTitle(HtmlCompat.fromHtml("Filter : <b>" + category + "</b> category in <b>" + country + "</b> country", HtmlCompat.FROM_HTML_MODE_LEGACY));
     }
 }

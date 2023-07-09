@@ -32,6 +32,7 @@ public class TrendingFragment extends Fragment {
     private FragmentTrendingBinding binding;
     private NewsTopHeadlinesAdapter newsTopHeadlinesAdapter;
     private final List<NewsResult> newsResultList = new ArrayList<>();
+    private int page = 1;
 
     public TrendingFragment() {
         // Required empty public constructor
@@ -57,14 +58,27 @@ public class TrendingFragment extends Fragment {
         newsTopHeadlinesAdapter = new NewsTopHeadlinesAdapter(newsResultList, getContext());
 
         rvTrendingNews.setAdapter(newsTopHeadlinesAdapter);
-        getNewsData();
+        getNewsData(page);
+
+        rvTrendingNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if(!rvTrendingNews.canScrollVertically(1)){
+                    page++;
+                    getNewsData(page);
+                }
+            }
+        });
     }
 
-    private void getNewsData() {
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String language = "en";
+    private void getNewsData(int page) {
+        final String apiKey = "71593d94a9394f10a6810987d49396ff";
+        final String language = "en";
+        final int pageSize = 20;
 
-        Call<NewsResponse> call = apiService.getTopHeadlines(apiKey, language);
+        Call<NewsResponse> call = apiService.getTopHeadlines(apiKey, language, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
@@ -74,7 +88,7 @@ public class TrendingFragment extends Fragment {
                     binding.rvTrendingNews.setVisibility(View.VISIBLE);
 
                     newsResultList.addAll(response.body().getResults());
-                    newsTopHeadlinesAdapter.notifyItemChanged(pageCount, newsResultList.size());
+                    newsTopHeadlinesAdapter.notifyItemRangeInserted(pageCount, newsResultList.size());
                 } else {
                     binding.loadingTrending.setVisibility(View.GONE);
                     binding.textNoResult.setVisibility(View.VISIBLE);

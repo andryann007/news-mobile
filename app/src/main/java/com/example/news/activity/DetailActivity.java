@@ -1,27 +1,17 @@
 package com.example.news.activity;
 
-import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebViewClient;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import com.example.news.R;
 import com.example.news.databinding.ActivityDetailBinding;
-import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
-
     private ActivityDetailBinding binding;
 
-    private String title;
-    private String urlToImage;
-    private String author;
-    private String publishedAt;
-    private String content;
-    private String source;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,58 +19,24 @@ public class DetailActivity extends AppCompatActivity {
         binding = ActivityDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Toolbar toolbar = findViewById(R.id.detailToolbar);
-        setSupportActionBar(toolbar);
-
-        title = getIntent().getStringExtra("title");
-        urlToImage = getIntent().getStringExtra("urlToImage");
-        author = getIntent().getStringExtra("author");
-        publishedAt = getIntent().getStringExtra("publishedAt");
-        content = getIntent().getStringExtra("content");
-        source = getIntent().getStringExtra("source");
-
-        setNewsDetails();
-
-        binding.detailToolbar.setOnClickListener(v-> onBackPressed());
+        String url = getIntent().getStringExtra("url");
+        if(!url.isEmpty()){
+            loadNews(url);
+        } else {
+            url = "https://www.google.com";
+            loadNews(url);
+        }
     }
 
-    @SuppressLint("SetTextI18n")
-    private void setNewsDetails(){
-        binding.loadingDetail.setVisibility(View.GONE);
-        binding.verticalLayout.setVisibility(View.VISIBLE);
+    private void loadNews(String url){
+        binding.webView.getSettings().setJavaScriptEnabled(false);
+        binding.webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        binding.webView.setWebViewClient(new WebViewClient());
+        binding.webView.loadUrl(url);
+    }
 
-        binding.textTitle.setText(title);
-
-        if(author != null){
-            binding.textAuthor.setText("Author : " + author);
-        } else {
-            binding.textAuthor.setText("Author : -");
-        }
-
-        if(publishedAt != null){
-            binding.textDatePublished.setText("Date : " + publishedAt);
-        } else {
-            binding.textDatePublished.setText("Date : -");
-        }
-
-        if(content != null){
-            binding.textContent.setText(content);
-        } else {
-            binding.textContent.setText("");
-        }
-
-        if(source != null){
-            binding.textSource.setText("Source URL : " + source);
-        } else {
-            binding.textSource.setText("Source URL : -");
-        }
-
-        if(urlToImage != null){
-            Uri imgUrl = Uri.parse(urlToImage);
-            Picasso.get().load(imgUrl).into(binding.imageNews);
-        } else {
-            binding.imageNews.setImageResource(R.drawable.ic_no_image);
-        }
-
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
     }
 }

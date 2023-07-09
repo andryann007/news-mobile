@@ -22,7 +22,7 @@
             android:text="@string/sort_news"
             android:fontFamily="sans-serif"
             android:textAlignment="center"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"/>
 
@@ -31,10 +31,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"
-            android:layout_marginHorizontal="5dp"
+            android:layout_marginHorizontal="10dp"
             android:text="@string/sort_the_news_by"
             android:fontFamily="sans-serif"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"/>
 
@@ -53,7 +53,7 @@
                 android:layout_weight="1"
                 android:text="@string/popularity"
                 android:fontFamily="sans-serif"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"/>
 
@@ -64,7 +64,7 @@
                 android:layout_weight="1"
                 android:text="@string/date"
                 android:fontFamily="sans-serif"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold"/>
 
@@ -74,9 +74,10 @@
             android:id="@+id/btnSort"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="5dp"
-            android:background="@color/white"
+            android:background="@drawable/bg_dialog"
+            android:backgroundTint="@color/white"
             android:text="@string/sort_news"
             android:textColor="@color/black"/>
 

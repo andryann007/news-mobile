@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.text.HtmlCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.news.R;
 import com.example.news.adapter.NewsEverythingAdapter;
@@ -32,6 +33,11 @@ public class SearchActivity extends AppCompatActivity {
     private String query;
 
     private final List<NewsResult> searchResultList = new ArrayList<>();
+    private int page = 1;
+    private final int pageSize = 20;
+    private final String apiKey = "71593d94a9394f10a6810987d49396ff";
+    private final String language = "en";
+    private String searchIn = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,19 +57,41 @@ public class SearchActivity extends AppCompatActivity {
         searchAdapter = new NewsEverythingAdapter(searchResultList, this);
 
         if(searchType.equalsIgnoreCase("title")){
-            searchNewsByTitle();
+            searchNewsByTitle(page);
+
+            binding.rvSearchNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvSearchNews.canScrollVertically(1)){
+                        page++;
+                        searchNewsByTitle(page);
+                    }
+                }
+            });
         } else if (searchType.equalsIgnoreCase("description")){
-            searchNewsByDesc();
+            searchNewsByDesc(page);
+
+            binding.rvSearchNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvSearchNews.canScrollVertically(1)){
+                        page++;
+                        searchNewsByDesc(page);
+                    }
+                }
+            });
         }
 
         binding.searchToolbar.setOnClickListener(v-> onBackPressed());
     }
-    private void searchNewsByTitle(){
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String language = "en";
-        String searchIn = "title";
+    private void searchNewsByTitle(int page){
+        searchIn = "title";
 
-        Call<NewsResponse> call = apiService.searchNews(apiKey, query, language, searchIn);
+        Call<NewsResponse> call = apiService.searchNews(apiKey, query, language, searchIn, page, pageSize);
         call.enqueue(new Callback<NewsResponse>(){
 
             @Override
@@ -91,12 +119,10 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    private void searchNewsByDesc(){
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String language = "en";
-        String searchIn = "description";
+    private void searchNewsByDesc(int page){
+        searchIn = "description";
 
-        Call<NewsResponse> call = apiService.searchNews(apiKey, query, language, searchIn);
+        Call<NewsResponse> call = apiService.searchNews(apiKey, query, language, searchIn, page, pageSize);
         call.enqueue(new Callback<NewsResponse>(){
 
             @Override

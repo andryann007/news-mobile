@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.text.HtmlCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.news.R;
 import com.example.news.adapter.NewsEverythingAdapter;
@@ -31,6 +32,12 @@ public class SortActivity extends AppCompatActivity {
     private ActivitySortBinding binding;
 
     private final List<NewsResult> sortResultList = new ArrayList<>();
+    private int page = 1;
+    private final int pageSize = 20;
+    private final String apiKey = "71593d94a9394f10a6810987d49396ff";
+    private final String language = "en";
+    private final String q = "trending";
+    private String sortBy = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +56,42 @@ public class SortActivity extends AppCompatActivity {
         sortAdapter = new NewsEverythingAdapter(sortResultList, this);
 
         if(sortType.equalsIgnoreCase("popularity")){
-            sortNewsByPopularity();
+            sortNewsByPopularity(page);
+
+            binding.rvSortNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvSortNews.canScrollVertically(1)){
+                        page++;
+                        sortNewsByPopularity(page);
+                    }
+                }
+            });
         } else if (sortType.equalsIgnoreCase("publishedAt")){
-            sortNewsByDate();
+            sortNewsByDate(page);
+
+            binding.rvSortNews.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if(!binding.rvSortNews.canScrollVertically(1)){
+                        page++;
+                        sortNewsByDate(page);
+                    }
+                }
+            });
         }
 
         binding.sortToolbar.setOnClickListener(v -> onBackPressed());
     }
 
-    private void sortNewsByPopularity(){
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String q = "trending";
-        String language = "en";
-        String sortBy = "popularity";
+    private void sortNewsByPopularity(int page){
+        sortBy = "popularity";
 
-        Call<NewsResponse> call = apiService.sortNews(apiKey, q, language, sortBy);
+        Call<NewsResponse> call = apiService.sortNews(apiKey, q, language, sortBy, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
@@ -90,13 +118,10 @@ public class SortActivity extends AppCompatActivity {
         });
     }
 
-    private void sortNewsByDate(){
-        String apiKey = "71593d94a9394f10a6810987d49396ff";
-        String q = "trending";
-        String language = "en";
-        String sortBy = "publishedAt";
+    private void sortNewsByDate(int page){
+        sortBy = "publishedAt";
 
-        Call<NewsResponse> call = apiService.sortNews(apiKey, q, language, sortBy);
+        Call<NewsResponse> call = apiService.sortNews(apiKey, q, language, sortBy, page, pageSize);
         call.enqueue(new Callback<NewsResponse>() {
             @Override
             public void onResponse(@NonNull Call<NewsResponse> call, @NonNull Response<NewsResponse> response) {
